@@ -1,0 +1,14 @@
+[
+    {
+        "malicious": false,
+        "link_delay": [0, 0.0134, 0.0342]
+    },
+    {
+        "malicious": true,
+        "link_delay": [0, 0.0134, 0.0342]
+    },
+    {
+        "malicious": true,
+        "link_delay": [0, 0.0134, 0.0342]
+    }
+]
