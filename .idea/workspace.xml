@@ -34,20 +34,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Client.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="364">
-              <caret line="625" column="21" lean-forward="true" selection-start-line="625" selection-start-column="21" selection-end-line="625" selection-end-column="21" />
-              <folding>
-                <element signature="e#0#11#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/client.spec">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="8" column="22" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
+            <state relative-caret-position="160">
+              <caret line="14" column="29" selection-start-line="14" selection-start-column="29" selection-end-line="14" selection-end-column="29" />
             </state>
           </provider>
         </entry>
@@ -74,10 +62,22 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/plot_3Dtry.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="156">
+              <caret line="10" column="11" lean-forward="true" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
+              <folding>
+                <element signature="e#122#160#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/test.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="8" column="36" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
+            <state relative-caret-position="494">
+              <caret line="19" column="18" selection-start-line="19" selection-start-column="18" selection-end-line="19" selection-end-column="18" />
             </state>
           </provider>
         </entry>
@@ -175,6 +175,7 @@
         <option value="$PROJECT_DIR$/client.spec" />
         <option value="$USER_HOME$/.virtualenvs/htkjproject-9aXzGckk/Lib/site-packages/pyqtgraph/opengl/GLViewWidget.py" />
         <option value="$PROJECT_DIR$/Client.py" />
+        <option value="$PROJECT_DIR$/multiprocessingLearn.py" />
       </list>
     </option>
   </component>
@@ -190,7 +191,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -202,6 +202,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -210,15 +211,15 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="configurable.group.editor" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="E:\PyCharm 2019.1.2\pycharmprojects\htkjproject" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\PyCharm 2019.1.2\pycharmprojects\htkjproject" />
       <recent name="E:\PyCharm 2019.1.2\pycharmprojects\htkjproject\ui_client" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="E:\PyCharm 2019.1.2\pycharmprojects\htkjproject" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -233,7 +234,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.Client">
+  <component name="RunManager" selected="Python.Client1122">
     <configuration name="Client" type="PythonConfigurationType" factoryName="Python">
       <module name="htkjproject" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -256,6 +257,25 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="Client1122" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="htkjproject" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Client1122.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="GLViewWidget" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="htkjproject" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -270,28 +290,6 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="E:/anaconda/Lib/site-packages/pyqtgraph/opengl/GLViewWidget.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="Server" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="htkjproject" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Server.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -322,20 +320,36 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="plot_test" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="multiprocessingLearn" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="htkjproject" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plot_test.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/multiprocessingLearn.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="plot_3Dtry" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="htkjproject" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/plot_3Dtry.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -366,29 +380,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="pytest in plot_test.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
-      <module name="htkjproject" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="_new_keywords" value="&quot;&quot;" />
-      <option name="_new_additionalArguments" value="&quot;&quot;" />
-      <option name="_new_target" value="&quot;$PROJECT_DIR$/plot_test.py&quot;" />
-      <option name="_new_targetType" value="&quot;PATH&quot;" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.Client1122" />
+        <item itemvalue="Python.multiprocessingLearn" />
+        <item itemvalue="Python.plot_3Dtry" />
         <item itemvalue="Python.GLViewWidget" />
         <item itemvalue="Python.test" />
-        <item itemvalue="Python.Server" />
-        <item itemvalue="Python.plot_test" />
-        <item itemvalue="Python tests.pytest in plot_test.py" />
       </list>
     </recent_temporary>
   </component>
@@ -428,6 +426,8 @@
       <workItem from="1604972986798" duration="103392000" />
       <workItem from="1605329538780" duration="20331000" />
       <workItem from="1605521907534" duration="2624000" />
+      <workItem from="1606137474480" duration="616000" />
+      <workItem from="1606196816094" duration="7819000" />
     </task>
     <servers />
   </component>
@@ -458,7 +458,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="364268000" />
+    <option name="totallyTimeSpent" value="372703000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -471,10 +471,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49122807" visible="true" weight="0.15671642" />
-      <window_info id="Structure" order="1" sideWeight="0.50877196" weight="0.1433902" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49122807" visible="true" weight="0.11886994" />
+      <window_info id="Structure" order="1" sideWeight="0.50877196" weight="0.1924307" />
       <window_info id="Favorites" order="2" sideWeight="0.5032538" weight="0.116204694" />
       <window_info anchor="bottom" id="Docker" order="0" show_stripe_button="false" />
       <window_info anchor="bottom" id="Database Changes" order="1" />
@@ -482,13 +481,13 @@
       <window_info anchor="bottom" id="TODO" order="3" weight="0.32884097" />
       <window_info anchor="bottom" id="Event Log" order="4" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="5" />
-      <window_info anchor="bottom" id="Find" order="6" weight="0.3264642" />
+      <window_info anchor="bottom" id="Find" order="6" weight="0.32614556" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.30477223" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
       <window_info anchor="bottom" id="Version Control" order="10" weight="0.3264642" />
-      <window_info anchor="bottom" id="Python Console" order="11" weight="0.25813448" />
-      <window_info anchor="bottom" id="Terminal" order="12" visible="true" weight="0.3373102" />
+      <window_info anchor="bottom" id="Python Console" order="11" weight="0.31995663" />
+      <window_info anchor="bottom" id="Terminal" order="12" weight="0.3373102" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -500,12 +499,17 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/pyinstaller-hooks-contrib" />
+    </ignored-roots>
+  </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/plot_test.py</url>
-          <line>92</line>
+          <line>86</line>
           <option name="timeStamp" value="19" />
         </line-breakpoint>
       </breakpoints>
@@ -520,7 +524,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/htkjproject$test.coverage" NAME="test Coverage Results" MODIFIED="1605182732152" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/htkjproject$Client.coverage" NAME="Client Coverage Results" MODIFIED="1605503633765" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/htkjproject$Client.coverage" NAME="Client Coverage Results" MODIFIED="1606196916352" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/htkjproject$DisplayControl.coverage" NAME="DisplayControl Coverage Results" MODIFIED="1599892069704" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/ui_client" />
     <SUITE FILE_PATH="coverage/htkjproject$ClientTCPDisplayControl.coverage" NAME="ClientTCPDisplayControl Coverage Results" MODIFIED="1599894337013" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/htkjproject$pytest_in_test_plot_py.coverage" NAME="pytest in test_plot.py Coverage Results" MODIFIED="1604717243646" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -529,34 +533,6 @@
     <SUITE FILE_PATH="coverage/htkjproject$ClientSocket.coverage" NAME="ClientSocket Coverage Results" MODIFIED="1603960415632" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/PyQt5-stubs/QtCore.pyi" />
-    <entry file="file://E:/anaconda/Lib/site-packages/PyQt5-stubs/QtOpenGL.pyi">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/client/Analysis-00.toc">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="211">
-          <caret line="9591" column="51" selection-start-line="9591" selection-start-column="51" selection-end-line="9591" selection-end-column="51" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://E:/anaconda/Lib/site-packages/OpenGL/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="183" column="17" lean-forward="true" selection-start-line="183" selection-start-column="17" selection-end-line="183" selection-end-column="17" />
-          <folding>
-            <element signature="e#7216#7254#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://E:/anaconda/Lib/site-packages/pyqtgraph/Qt.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="5382">
-          <caret line="209" column="23" selection-start-line="209" selection-start-column="23" selection-end-line="209" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/func_response.py" />
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/typeshed/stdlib/2and3/time.pyi">
       <provider selected="true" editor-type-id="text-editor" />
@@ -700,16 +676,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Client_1110.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="301" column="42" selection-start-line="301" selection-start-column="42" selection-end-line="301" selection-end-column="42" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/Client_1110.py" />
     <entry file="file://$PROJECT_DIR$/Pipfile.lock">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -840,23 +807,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Client.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="625" column="21" lean-forward="true" selection-start-line="625" selection-start-column="21" selection-end-line="625" selection-end-column="21" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/client.spec">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="8" column="22" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ClientSocket.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="988">
@@ -876,8 +826,59 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/test.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="494">
+          <caret line="19" column="18" selection-start-line="19" selection-start-column="18" selection-end-line="19" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/client.spec">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="208">
-          <caret line="8" column="36" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
+          <caret line="8" column="22" selection-start-line="8" selection-start-column="22" selection-end-line="8" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/plot_3Dtry.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="10" column="11" lean-forward="true" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
+          <folding>
+            <element signature="e#122#160#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://E:/anaconda/Lib/multiprocessing/queues.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="90" column="8" selection-start-line="90" selection-start-column="8" selection-end-line="90" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/multiprocessingLearn.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
+          <folding>
+            <element signature="e#62#94#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client1122.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-6344">
+          <caret line="8" column="31" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client_1124.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Client.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="160">
+          <caret line="14" column="29" selection-start-line="14" selection-start-column="29" selection-end-line="14" selection-end-column="29" />
         </state>
       </provider>
     </entry>
