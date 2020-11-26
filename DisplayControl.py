@@ -135,7 +135,7 @@ class Ui_MainWindow(object):
         MainWindow.setWindowTitle(_translate("MainWindow", "显示控制"))
         self.groupBox_2.setTitle(_translate("MainWindow", "配置"))
         self.label_3.setText(_translate("MainWindow", "服务器IP："))
-        self.ip.setText(_translate("MainWindow", "192.168.1.10"))
+        self.ip.setText(_translate("MainWindow", "127.0.0.1"))
         self.label_4.setText(_translate("MainWindow", "服务器Port："))
         self.port.setText(_translate("MainWindow", "55500"))
         self.connectButton.setText(_translate("MainWindow", "连接"))

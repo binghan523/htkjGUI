@@ -14,8 +14,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_NodeStatus(object):
     def setupUi(self, NodeStatus):
         NodeStatus.setObjectName("NodeStatus")
-        NodeStatus.resize(695, 401)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        NodeStatus.resize(686, 426)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(NodeStatus.sizePolicy().hasHeightForWidth())
@@ -29,6 +29,12 @@ class Ui_NodeStatus(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(NodeStatus)
         self.verticalLayout.setObjectName("verticalLayout")
         self.guiplot = GLViewWidget(NodeStatus)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(1)
+        sizePolicy.setVerticalStretch(1)
+        sizePolicy.setHeightForWidth(self.guiplot.sizePolicy().hasHeightForWidth())
+        self.guiplot.setSizePolicy(sizePolicy)
+        self.guiplot.setAutoFillBackground(False)
         self.guiplot.setObjectName("guiplot")
         self.verticalLayout.addWidget(self.guiplot)
 

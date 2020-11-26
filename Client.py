@@ -2,6 +2,7 @@ import time
 import os
 import sys
 import math
+import multiprocessing
 import threading
 from ClientSocket import ClientSocket
 
@@ -29,15 +30,8 @@ from SystemStatus import Ui_SystemStatus
 class ClientTCP(QMainWindow, Ui_MainWindow):
     """
     客户端，主窗口UI
-    - 信号与槽
     - 与服务器交互协议，type
-    - socket
-        - 实体为 实例.csock
-    - 标志位
-    - 子窗口实例与线程
-    - 主窗口UI 按钮触发处理方法
-    - 信号与槽触发
-    - 其它
+    - 信号与槽
     """
 
     # *******************************************************
@@ -62,10 +56,24 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
     # 用于帮助thread_parseRecvAndHandle刷新时间
     signal_setTime = pyqtSignal()
 
-    def __init__(self):
-
+    def __init__(self, qNode, qSystem):
+        """
+        - queue
+        - socket
+            - 实体为 实例.csock
+        - 标志位
+        - 子窗口实例与线程
+        - 主窗口UI 按钮触发处理方法
+        - 信号与槽触发
+        - 其它
+        """
         super(ClientTCP, self).__init__()
         self.setupUi(self)
+
+        # *******************************************************
+        # queue
+        self.queue_node = qNode
+        self.queue_system = qSystem
 
         # *******************************************************
         # socket
@@ -89,18 +97,18 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
         # 是否收到推进之后的反馈消息，若收到才可进行下一次定时推进，否则，等待
         self.is_ACK = False
         # 判断节点窗口是否正在运行
-        self.is_nodeWindow_show = False
+        # self.is_nodeWindow_show = False
         # 判断主窗口是否正在运行
-        self.is_systemWindow_show = False
+        # self.is_systemWindow_show = False
 
         # *******************************************************
         # 窗口实例与线程
 
         # 在主窗口类的初始化函数中对子窗口进行实例化。若在其它函数中进行实例化，可能会出现子窗口闪退的问题
         # 实例化节点3D图子窗口
-        self.ChildUI_NodeStatus = ChildWinNodeStatus()
+        # self.ChildUI_NodeStatus = ChildWinNodeStatus()
         # 实例化生长速率子窗口
-        self.ChildUi_SystemStatus = ChildWinSystemStatus()
+        # self.ChildUi_SystemStatus = ChildWinSystemStatus()
 
         # socket收发线程
         self.thread_rx = threading.Thread(target=self.conn.rx)  # 数据放入self.rxbuf_q
@@ -111,9 +119,9 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
         self.thread_advanceSimulation = threading.Thread(target=self.ui_run_timedSending)
 
         # 初始化建立画3D图界面刷新线程的对象
-        self.QThread_plotNodeStatus = QThreadPlotNode(self.ChildUI_NodeStatus)
+        # self.QThread_plotNodeStatus = QThreadPlotNode(self.ChildUI_NodeStatus)
         # 初始化建立画折线图界面刷新线程的对象
-        self.QThread_plotSystemStatus = QThreadPlotSystem(self.ChildUi_SystemStatus)
+        # self.QThread_plotSystemStatus = QThreadPlotSystem(self.ChildUi_SystemStatus)
 
         # *******************************************************
         # 主窗口UI 按钮触发处理方法
@@ -122,8 +130,8 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
         self.buttonRun.clicked.connect(self.ui_runSystem_handle)
         self.buttonSuspend.clicked.connect(self.ui_suspendSystem_handle)
         self.connectButton.clicked.connect(self.ui_linkAndStart)
-        self.buttonNodeStatus.clicked.connect(self.ui_nodeStatus_handle)
-        self.buttonSystemStatus.clicked.connect(self.ui_systemStatus_handle)
+        # self.buttonNodeStatus.clicked.connect(self.ui_nodeStatus_handle)
+        # self.buttonSystemStatus.clicked.connect(self.ui_systemStatus_handle)
         self.buttonLoadBusiness.clicked.connect(self.ui_business_handle)
         self.runSpeed.currentIndexChanged.connect(self.ui_runSystem_handle)
         # self.buttonClose.clicked.connect(self.ui_closeSystem_handle)
@@ -145,23 +153,23 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
         # 其它
 
         # # 节点状态数据锁
-        self.lock_node = threading.Lock()
+        # self.lock_node = threading.Lock()
         # # 系统状态数据锁
-        self.lock_system = threading.Lock()
+        # self.lock_system = threading.Lock()
         # 存放接收到的数据
         self.rxbuf_q = []
         # 存放节点状态数据，由self.ui_linkAndStart放入，self.response_nodeStatus_handle提取并处理
-        self.data_NodeStatus = dict()
+        # self.data_NodeStatus = dict()
         # 存放系统统计数据，由self.ui_linkAndStart放入，self.response_systemStatus_handle提取并处理
-        self.data_SystemStatus = dict()
+        # self.data_SystemStatus = dict()
         # 存储响应控制函数
-        self.response_handle_functions = dict()
+        # self.response_handle_functions = dict()
         # 存储共识时间
-        self.list_consensusLatency = []
+        # self.list_consensusLatency = []
         # 存储生长速率
-        self.list_growth_rate = []
+        # self.list_growth_rate = []
         # 存储收到生长速率的系统已推进时刻
-        self.list_growth_rate_SimulationTime = []
+        # self.list_growth_rate_SimulationTime = []
         # 系统已推进到的时间
         self.time_simulated = 0.00
         # 系统运行速度
@@ -199,6 +207,9 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
                                          QMessageBox.No
                                          )
             if reply == QMessageBox.Yes:
+                self.queue_system.put('exit')
+                self.queue_node.put('exit')
+                time.sleep(0.005)  # 加个时延，不然queue反应不过来，子窗口不能保证全部关闭
                 event.accept()
                 os._exit(0)
             else:
@@ -226,45 +237,47 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
                     - ui_systemStatus_handle提取self.data_SystemStatus，做后续UI操作
                 - 此处不打开系统状态UI，因为需要进一步判断接收的是防篡改率，还是共识时间，当确定之后再打开对应窗口
         """
-        ack_times = 0
+        # ack_times = 0
         while True:
             # 控制帧率
-            is_plotAllowed = ack_times % 20
+            # is_plotAllowed = ack_times % 20
             if len(self.rxbuf_q):
                 py_data = self.rxbuf_q.pop(0)
-                # print(py_data)
+                print(py_data)
                 dtype = py_data['type']
                 if dtype == self.R_SIM_STEP_CON:
                     self.is_ACK = True
                     setTime_time = time.process_time()
                     # self.ui_runningTime()
-                    print('setTime is: %.6f' % setTime_time)
+                    # print('setTime is: %.6f' % setTime_time)
                     self.signal_setTime.emit()
-                    ack_times += 1
-                if dtype == self.R_SIM_SUSPEND_NODESTATUS and is_plotAllowed == 0:
+                    # ack_times += 1
+                if dtype == self.R_SIM_SUSPEND_NODESTATUS:
+                    self.queue_node.put(py_data)
                     # self.ui_print_message('********************************\n' + 'Receive node status information.')
-                    if not self.is_nodeWindow_show:
-                        self.buttonNodeStatus.click()
+                    # if not self.is_nodeWindow_show:
+                    #     self.buttonNodeStatus.click()
                     # 若收到节点数据要暂停发送，则启用下行代码
                     # self.is_allowed_promote = False
-                    self.data_NodeStatus = py_data
-
-                    self.lock_node.acquire()
-                    append_time = time.process_time()
+                    # self.data_NodeStatus = py_data
+                    # self.lock_node.acquire()
+                    # append_time = time.process_time()
                     # self.QThread_plotNodeStatus.buf_nodeStatus.append(self.data_NodeStatus)
-                    self.QThread_plotNodeStatus.append_buf(self.data_NodeStatus)
-                    print('append time is: %.5f' % append_time)
-                    self.lock_node.release()
+                    # self.QThread_plotNodeStatus.append_buf(self.data_NodeStatus)
+                    # print('append time is: %.5f' % append_time)
+                    # self.lock_node.release()
 
-                if dtype == self.R_SIM_SYSTEMSTATUS and is_plotAllowed == 0:
+                if dtype == self.R_SIM_SYSTEMSTATUS:
                     # self.ui_print_message('********************************\n' + 'Receive system status information.')
-                    if not self.is_systemWindow_show:
-                        self.buttonSystemStatus.click()
-                    self.data_SystemStatus = py_data
-                    self.lock_system.acquire()
-                    self.QThread_plotSystemStatus.buf_systemStatus.append(self.data_SystemStatus)
-                    self.QThread_plotSystemStatus.time_simulated = self.time_simulated
-                    self.lock_system.release()
+                    # if not self.is_systemWindow_show:
+                    #     self.buttonSystemStatus.click()
+                    # self.data_SystemStatus = py_data
+                    # self.lock_system.acquire()
+                    # self.QThread_plotSystemStatus.buf_systemStatus.append(self.data_SystemStatus)
+                    # self.QThread_plotSystemStatus.time_simulated = self.time_simulated
+                    py_data['time_simulated'] = self.time_simulated
+                    self.queue_system.put(py_data)
+                    # self.lock_system.release()
 
     # ****************************************************
     # UI功能模块，button收到点击，触发
@@ -292,8 +305,8 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
                 self.is_connected = True
                 self.thread_tx.start()
                 self.thread_rx.start()
-                self.QThread_plotNodeStatus.start()
-                self.QThread_plotSystemStatus.start()
+                # self.QThread_plotNodeStatus.start()
+                # self.QThread_plotSystemStatus.start()
                 self.thread_parseRecvAndHandle.start()
                 self.thread_advanceSimulation.start()
 
@@ -341,8 +354,8 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
                 # 已收到确认消息，则继续发送，否则直接进行下次循环
                 if self.is_ACK and self.is_connected and self.is_allowed_promote is True:
                     # 累计已运行时间
-                    # time_remaining = interval - time.time() % interval
-                    # time.sleep(time_remaining)
+                    time_remaining = interval - time.time() % interval
+                    time.sleep(time_remaining)
                     # 直接相加在python中会有小数位数出错，因此借用time接力
                     time_float = self.time_simulated + round(float(self.speed) / 1000, 2)
                     self.time_simulated = round(time_float, 2)
@@ -355,7 +368,7 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
                     self.is_ACK = False
                     # 执行定时发送操作
                     step_time = time.process_time()
-                    print('step_time is: %.6f' % step_time)
+                    # print('step_time is: %.6f' % step_time)
                     self.conn.send(message)
             except Exception as e:
                 raise e
@@ -402,36 +415,36 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
             self.is_allowed_promote = False
             self.ui_print_message('********************************\n' + 'Pause system...')
 
-    def ui_nodeStatus_handle(self):
-        """
-        节点状态按钮被触发，或收到节点状态数据触发
-        - 检测是否已连接成功，用于在未连接时按钮就被点击给出提示
-        - 若已连接服务器
-            - 打开节点UI
-            - 将新收到的节点数据交给QThread子线程处理
-        """
-        if self.is_connected is False:
-            self.ui_print_message('Please establish a connection first!')
-        else:
-            if not self.is_nodeWindow_show:
-                self.is_nodeWindow_show = True
-                self.ChildUI_NodeStatus.show()
+    # def ui_nodeStatus_handle(self):
+    #     """
+    #     节点状态按钮被触发，或收到节点状态数据触发
+    #     - 检测是否已连接成功，用于在未连接时按钮就被点击给出提示
+    #     - 若已连接服务器
+    #         - 打开节点UI
+    #         - 将新收到的节点数据交给QThread子线程处理
+    #     """
+    #     if self.is_connected is False:
+    #         self.ui_print_message('Please establish a connection first!')
+    #     else:
+    #         if not self.is_nodeWindow_show:
+    #             self.is_nodeWindow_show = True
+    #             self.ChildUI_NodeStatus.show()
 
-    def ui_systemStatus_handle(self):
-        """
-        系统状态按钮被触发，或收到系统状态数据触发
-        - 检测是否已连接成功，用于在未连接时按钮就被点击给出提示
-        - 若已连接服务器
-            - 打开生长速率折线UI
-            - 打开共识时间折线UI
-
-        """
-        if self.is_connected is False:
-            self.ui_print_message('Please establish a connection first!')
-        else:
-            if not self.is_systemWindow_show:
-                self.is_systemWindow_show = True
-                self.ChildUi_SystemStatus.show()
+    # def ui_systemStatus_handle(self):
+    #     """
+    #     系统状态按钮被触发，或收到系统状态数据触发
+    #     - 检测是否已连接成功，用于在未连接时按钮就被点击给出提示
+    #     - 若已连接服务器
+    #         - 打开生长速率折线UI
+    #         - 打开共识时间折线UI
+    #
+    #     """
+    #     if self.is_connected is False:
+    #         self.ui_print_message('Please establish a connection first!')
+    #     else:
+    #         if not self.is_systemWindow_show:
+    #             self.is_systemWindow_show = True
+    #             self.ChildUi_SystemStatus.show()
 
     def ui_business_handle(self, business):
         """
@@ -524,37 +537,169 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
         self.MessageBody.moveCursor(QTextCursor.End)
 
 
-class QThreadPlotNode(QThread):
-    """
-    本类作用；
-    - analyze()函数处理节点状态数据，return处理后的数据
-    - _argument:传入节点子窗口实例
-    - _signal用来向向UI实例emit画图用的数据
+# class PlotNode(object):
+#     """
+#     本类作用；
+#     - analyze()函数处理节点状态数据，return处理后的数据
+#     - _argument:传入节点子窗口实例
+#     - _signal用来向向UI实例emit画图用的数据
+#
+#     run()方法
+#     - 采用牛奶策略，循环持续检测self.buf_nodeStatus
+#     - 若buf有数据，则取出，运行analyze()处理，处理完后analyze()return
+#     - emit处理完后的数据，交_argument收到的子窗口实例的画图函数画图
+#     """
+#     signal = pyqtSignal(object, object, object, object)
+#
+#     def __init__(self, qNode):
+#         """
+#         :param qNode: 为queue，存放节点数据
+#         """
+#         super(PlotNode, self).__init__()
+#         self.queue_node = qNode
+#         self.class_childUI = ChildWinNodeStatus()
+#         self.signal.connect(self.class_childUI.child_plotNode)
+#
+#     @staticmethod
+#     def analyzeNode(dataNode):
+#         """
+#         初始化画散点图所需的点数据：position，size，color，并return
+#         - 节点数据格式化，每个节点的不同属性组成对应的专属list，list的长度应恰为num_nodes
+#         - 组装成画图所用的dict，包含distance，pos，size，color
+#         :return: nodeStatus_dict
+#         """
+#         num_nodes = dataNode['state']['num_nodes']
+#         nodes = dataNode['state']['nodes']
+#         # 用于3D图的视角高度设定
+#         distance = 0
+#         # 设置numpy.ndarray类型的数据，用于画散点图
+#         pos = np.empty((num_nodes, 3))
+#         size = np.empty(num_nodes)
+#         color = np.empty((num_nodes, 4))
+#
+#         for i in range(num_nodes):
+#             pos[i] = (nodes[i]['x'] / 1000, nodes[i]['y'] / 1000, nodes[i]['z'] / 1000)
+#             max_xyz = max(pos[i][0], pos[i][1], pos[i][2])
+#             if abs(distance) < abs(max_xyz):
+#                 distance = abs(max_xyz)
+#             size[i] = 0.5
+#             if nodes[i]['started'] is True and nodes[i]['malicious'] is False:
+#                 # 节点类型，1为簇首 黄，2为成员 绿，5为CA 天蓝，10为客户 蓝
+#                 if nodes[i]['type'] == 1:
+#                     color[i] = (1.0, 1.0, 0.0, 1)  # 黄色
+#                 if nodes[i]['type'] == 2:
+#                     color[i] = (0.0, 1.0, 0.0, 1)  # 绿色
+#                 if nodes[i]['type'] == 5:
+#                     color[i] = (0.0, 1.0, 1.0, 1)  # 天蓝色
+#                 if nodes[i]['type'] == 10:
+#                     color[i] = (0.0, 0.0, 1.0, 1)  # 蓝色
+#             elif nodes[i]['malicious'] is True:
+#                 color[i] = (1.0, 0.0, 0.0, 0.5)  # 红色
+#             else:
+#                 color[i] = (1, 1, 1, 0.5)  # 灰色
+#
+#         # print('distance: {0},\npos: {1},\nsize: {2},\ncolor: {3}'.format(distance, pos, size, color))
+#         return distance, pos, size, color
+#
+#     def run(self):
+#         while True:
+#             if not self.queue_node.empty():
+#                 dataNode = self.queue_node.get()
+#                 distance, pos, size, color = self.analyzeNode(dataNode)
+#                 self.signal.emit(distance, pos, size, color)
 
-    run()方法
-    - 采用牛奶策略，循环持续检测self.buf_nodeStatus
-    - 若buf有数据，则取出，运行analyze()处理，处理完后analyze()return
-    - emit处理完后的数据，交_argument收到的子窗口实例的画图函数画图
-    """
-    signal = pyqtSignal(object, object, object, object)
 
-    def __init__(self, _argument):
+# class PlotSystem(object):
+#     """
+#     处理生长速率与共识时间，画折线图
+#     本类作用；
+#     - analyze()函数处理系统状态数据
+#     - _argument:传入系统子窗口实例
+#     - _signal用来向UI实例emit画图用的数据，connect传来实例的child_plotSystem()
+#
+#     run()方法：
+#     - 采用牛奶策略，循环持续检测self.buf_systemStatus
+#     - 若buf有数据，则取出，运行analyzeSystem()处理，处理完后analyze()return
+#     - emit处理完后的数据，交_argument收到的子窗口实例的画图函数画图
+#     """
+#     signal = pyqtSignal(object, object, object)
+#
+#     def __init__(self, qSystem):
+#         super(PlotSystem, self).__init__()
+#
+#         self.class_childUI_system = ChildWinSystemStatus()
+#         self.signal.connect(self.class_childUI_system.child_plotSystem)
+#         # self.buf_systemStatus = []
+#         # self.time_simulated = 0.00
+#         self.queue_system = qSystem
+#
+#         self.consensusLatency = []
+#         self.rateGrowth = []
+#         self.simulationTime = []
+#
+#     def analyzeSystem(self, dataSystem):
+#         """
+#         处理系统数据，并return处理后的数据，用于run()中emit给传来的子窗口实例画图
+#         """
+#         value = dataSystem['value']
+#         if dataSystem['stat'] == 0:
+#             self.consensusLatency.append(value)
+#             rate_growth = 1 / value
+#             self.rateGrowth.append(rate_growth)
+#             self.simulationTime.append(dataSystem['time_simulated'])
+#             # 向连接槽发射信号，触发窗口类中画图函数
+#             self.signal.emit(self.consensusLatency, self.rateGrowth, self.simulationTime)
+#         if dataSystem['stat'] == 1:
+#             self.class_childUI_system.rate_anti.setText(str(value))
+#
+#     def run(self):
+#         while True:
+#             if not self.queue_system.empty():
+#                 dataSystem = self.queue_system.get()
+#                 print(dataSystem)
+#                 self.analyzeSystem(dataSystem)
+
+
+class ChildWinNodeStatus(QDialog, Ui_NodeStatus):
+
+    signal_plot = pyqtSignal(object, object, object, object)
+    # 当主窗口被关闭后，也关闭子窗口
+    signal_exit = pyqtSignal(object)
+
+    def __init__(self, qNode):
+        super(ChildWinNodeStatus, self).__init__()
+        self.setupUi(self)
+        # 设置窗口最小化与最大化按钮，关闭按钮置灰
+        self.setWindowFlags(Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint)
+        # pyside2中需要先声明第三方控件，因为PlotWidget为第三方PyQtgraph里面的
+        # loader.registerCustomWidget(pg.PlotWidget)
+        # self.ui = uic.loadUi("ui_client/NodeStatus.ui")
+
+        self.queue_node = qNode
+        self.signal_plot.connect(self.child_plotNode)
+        self.signal_exit.connect(self.closeEvent)
+
+        # 初始化画图窗口设置，节省addItem(sp)的时间
+        # time_start = time.process_time()
+        self.distance = 40  # 设置初始视角高度
+        self.pos = np.zeros((100, 3))  # 初始化100个点位置
+        self.size = np.ones(100) * 0.5  # 设置初始点大小0.5
+        self.color = np.zeros((100, 4))  # 设置初始100个点的颜色，(0, 0, 0, 0)为透明无色
+        self.g = gl.GLGridItem()
+        self.size_axes = self.distance * 3
+        self.g.setSize(x=self.size_axes, y=self.size_axes, z=self.size_axes)
+        self.guiplot.addItem(self.g)
+        self.sp = gl.GLScatterPlotItem(pos=self.pos, size=self.size, color=self.color, pxMode=False)
+        self.guiplot.addItem(self.sp)  # 最主要的时间花费在这
+        # time_end = time.process_time()
+        # print('Time spent on draw is: %.6f' % (time_end - time_start))
+
+    def closeEvent(self, event):
+        os._exit(0)
+
+    def analyzeNode(self, dataNode):
         """
-        :param _argument: 为节点数据处理类的实例，由主窗口UI实例化，并在实例化本类时传入
-        """
-        super(QThreadPlotNode, self).__init__()
-        self.class_childUI = _argument
-        self.signal.connect(_argument.child_plotNode)
-        self.buf_nodeStatus = list()  # 用于存储持续收到的节点数据
-
-    def append_buf(self, node):
-        """用于在主窗口中调用，append"""
-        self.buf_nodeStatus.append(node)
-
-    @staticmethod
-    def analyzeNode(dataNode):
-        """
-        初始化画散点图所需的点数据：position，size，color，并return
+        初始化画散点图所需的点数据：position，size，color，并emit
         - 节点数据格式化，每个节点的不同属性组成对应的专属list，list的长度应恰为num_nodes
         - 组装成画图所用的dict，包含distance，pos，size，color
         :return: nodeStatus_dict
@@ -577,6 +722,7 @@ class QThreadPlotNode(QThread):
             if nodes[i]['started'] is True and nodes[i]['malicious'] is False:
                 # 节点类型，1为簇首 黄，2为成员 绿，5为CA 天蓝，10为客户 蓝
                 if nodes[i]['type'] == 1:
+                    size[i] = 1.59
                     color[i] = (1.0, 1.0, 0.0, 1)  # 黄色
                 if nodes[i]['type'] == 2:
                     color[i] = (0.0, 1.0, 0.0, 1)  # 绿色
@@ -590,114 +736,73 @@ class QThreadPlotNode(QThread):
                 color[i] = (1, 1, 1, 0.5)  # 灰色
 
         # print('distance: {0},\npos: {1},\nsize: {2},\ncolor: {3}'.format(distance, pos, size, color))
-        return distance, pos, size, color
-
-    def run(self):
-        while True:
-            if len(self.buf_nodeStatus):
-                dataNode = self.buf_nodeStatus.pop(0)
-                distance, pos, size, color = self.analyzeNode(dataNode)
-                self.signal.emit(distance, pos, size, color)
-
-
-class QThreadPlotSystem(QThread):
-    """
-    处理生长速率与共识时间，画折线图
-    本类作用；
-    - analyze()函数处理系统状态数据
-    - _argument:传入系统子窗口实例
-    - _signal用来向UI实例emit画图用的数据，connect传来实例的child_plotSystem()
-
-    run()方法：
-    - 采用牛奶策略，循环持续检测self.buf_systemStatus
-    - 若buf有数据，则取出，运行analyzeSystem()处理，处理完后analyze()return
-    - emit处理完后的数据，交_argument收到的子窗口实例的画图函数画图
-    """
-    signal = pyqtSignal(object, object, object)
-
-    def __init__(self, _argument):
-        super(QThreadPlotSystem, self).__init__()
-
-        self.class_childUI_system = _argument
-        self.signal.connect(_argument.child_plotSystem)
-        self.buf_systemStatus = []
-        self.time_simulated = 0.00
-
-        self.consensusLatency = []
-        self.rateGrowth = []
-        self.simulationTime = []
-
-    def analyzeSystem(self, dataSystem):
-        """
-            处理系统数据，并return处理后的数据，用于run()中emit给传来的子窗口实例画图
-            """
-        value = dataSystem['value']
-        if dataSystem['stat'] == 0:
-            self.consensusLatency.append(value)
-            rate_growth = 1 / value
-            self.rateGrowth.append(rate_growth)
-            self.simulationTime.append(self.time_simulated)
-            # 向连接槽发射信号，触发窗口类中画图函数
-            self.signal.emit(self.consensusLatency, self.rateGrowth, self.simulationTime)
-        if dataSystem['stat'] == 1:
-            self.class_childUI_system.rate_anti.setText(str(value))
-
-    def run(self):
-        while True:
-            if len(self.buf_systemStatus):
-                dataSystem = self.buf_systemStatus.pop(0)
-                print('dataSystem is :', dataSystem)
-                self.analyzeSystem(dataSystem)
-
-
-class ChildWinNodeStatus(QDialog, Ui_NodeStatus):
-
-    def __init__(self):
-        super(ChildWinNodeStatus, self).__init__()
-        self.setupUi(self)
-        # 设置窗口最小化与最大化按钮，关闭按钮置灰
-        self.setWindowFlags(Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint)
-        # pyside2中需要先声明第三方控件，因为PlotWidget为第三方PyQtgraph里面的
-        # loader.registerCustomWidget(pg.PlotWidget)
-        # self.ui = uic.loadUi("ui_client/NodeStatus.ui")
-
-        # 初始化画图窗口设置，节省addItem(sp)的时间
-        time_start = time.process_time()
-        self.distance = 40  # 设置初始视角高度
-        self.pos = np.zeros((1, 3))  # 初始化100个点位置
-        self.size = np.ones(1) * 0.5  # 设置初始点大小0.5
-        self.color = np.zeros((1, 4))  # 设置初始100个点的颜色，(0, 0, 0, 0)为透明无色
-        self.g = gl.GLGridItem()
-        self.size_axes = self.distance * 3
-        self.g.setSize(x=self.size_axes, y=self.size_axes, z=self.size_axes)
-        self.guiplot.addItem(self.g)
-        self.sp = gl.GLScatterPlotItem(pos=self.pos, size=self.size, color=self.color, pxMode=False)
-        self.guiplot.addItem(self.sp)  # 最主要的时间花费在这
-        time_end = time.process_time()
-        print('Time spent on draw is: %.6f' % (time_end - time_start))
+        self.signal_plot.emit(distance, pos, size, color)
 
     def child_plotNode(self, distance, pos, size, color):
         """
         收到节点数据，更新画图
         - 已达到微秒级，卡顿的原因不在这
         """
-        time_draw = time.process_time()
-        print('draw:', time_draw)
+        # time_draw = time.process_time()
+        # print('draw:', time_draw)
         # self.guiplot.clear() # clear会把item都清掉，不要用
         self.guiplot.opts['distance'] = distance * 3
         self.size_axes = distance * 3
         self.g.setSize(x=self.size_axes, y=self.size_axes, z=self.size_axes)
         # self.guiplot.addItem(g)
         self.sp.setData(pos=pos, size=size, color=color, pxMode=False)
+        # print('Plot Node')
+
+    def run(self):
+        while True:
+            if not self.queue_node.empty():
+                dataNode = self.queue_node.get()
+                # 处理主窗口被关闭的动作
+                if dataNode == 'exit':
+                    self.signal_exit.emit('exit')
+                    break
+                # print('dataNode:', dataNode)
+                self.analyzeNode(dataNode)
+                # self.child_plotNode(distance, pos, size, color)
 
 
 class ChildWinSystemStatus(QDialog, Ui_SystemStatus):
+    signal_plot = pyqtSignal(object, object, object)
+    # 当主窗口被关闭后，也关闭子窗口
+    signal_exit = pyqtSignal(object)
 
-    def __init__(self):
+    def __init__(self, qSystem):
         super(ChildWinSystemStatus, self).__init__()
         self.setupUi(self)
         # 设置窗口最小化与最大化按钮，关闭按钮置灰
         self.setWindowFlags(Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint)
+
+        self.signal_plot.connect(self.child_plotSystem)
+        self.signal_exit.connect(self.closeEvent)
+
+        self.queue_system = qSystem
+
+        self.consensusLatency = []
+        self.rateGrowth = []
+        self.simulationTime = []
+
+    def closeEvent(self, event):
+        os._exit(0)
+
+    def analyzeSystem(self, dataSystem):
+        """
+        处理系统数据，并return处理后的数据，用于run()中emit给传来的子窗口实例画图
+        """
+        value = dataSystem['value']
+        if dataSystem['stat'] == 0:
+            self.consensusLatency.append(value)
+            rate_growth = 1 / value
+            self.rateGrowth.append(rate_growth)
+            self.simulationTime.append(dataSystem['time_simulated'])
+            # 向连接槽发射信号，触发窗口类中画图函数
+            self.signal_plot.emit(self.consensusLatency, self.rateGrowth, self.simulationTime)
+        if dataSystem['stat'] == 1:
+            self.rate_anti.setText(str(value))
 
     def child_plotSystem(self, consensusLatency, growth_rate, list_time):
         """
@@ -715,10 +820,53 @@ class ChildWinSystemStatus(QDialog, Ui_SystemStatus):
         else:
             pass
 
+    def run(self):
+        while True:
+            if not self.queue_system.empty():
+                dataSystem = self.queue_system.get()
+                # print('dataSystem')
+                if dataSystem == 'exit':
+                    self.signal_exit.emit('exit')
+                    break
+                self.analyzeSystem(dataSystem)
+                # self.child_plotSystem(consensusLatency, growth_rate, list_time)
 
-app = QApplication(sys.argv)
-app.setWindowIcon(QIcon('icon.jpg'))
-clientWindow = ClientTCP()
-childWindow = ChildWinNodeStatus()
-clientWindow.show()
-sys.exit(app.exec_())
+
+# 三个进程，三个窗口
+def main_client(qNode, qSystem):
+    app_client = QApplication(sys.argv)
+    app_client.setWindowIcon(QIcon('icon.jpg'))
+    clientWindow = ClientTCP(qNode, qSystem)
+    clientWindow.show()
+    sys.exit(app_client.exec_())
+
+
+def main_node(qNode):
+    app_node = QApplication(sys.argv)
+    app_node.setWindowIcon(QIcon('icon.jpg'))
+    nodeWindow = ChildWinNodeStatus(qNode)
+    nodeWindow.show()
+    thread_run = threading.Thread(target=nodeWindow.run)
+    thread_run.start()
+    sys.exit(app_node.exec_())
+
+
+def main_system(qSystem):
+    app_system = QApplication(sys.argv)
+    app_system.setWindowIcon(QIcon('icon.jpg'))
+    systemWindow = ChildWinSystemStatus(qSystem)
+    systemWindow.show()
+    thread_run = threading.Thread(target=systemWindow.run)
+    thread_run.start()
+    sys.exit(app_system.exec_())
+
+
+if __name__ == '__main__':
+    queueNode = multiprocessing.Queue()
+    queueSystem = multiprocessing.Queue()
+    pMainWindow = multiprocessing.Process(target=main_client, args=(queueNode, queueSystem))
+    pNode = multiprocessing.Process(target=main_node, args=(queueNode,))
+    pSystem = multiprocessing.Process(target=main_system, args=(queueSystem,))
+    pMainWindow.start()
+    pNode.start()
+    pSystem.start()

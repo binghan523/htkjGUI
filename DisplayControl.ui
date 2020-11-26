@@ -101,14 +101,14 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QPushButton" name="buttonRerun">
+            <widget class="QPushButton" name="buttonStart">
              <property name="text">
-              <string>重启系统</string>
+              <string>启动系统</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="buttonStart">
+            <widget class="QPushButton" name="buttonRun">
              <property name="text">
               <string>运行系统</string>
              </property>
