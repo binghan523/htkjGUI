@@ -1,25 +1,27 @@
-import json
+# # ***********************************************************************
+# import json
+#
+#
+# def pack(pyvar):
+#     jvar = json.dumps(pyvar)
+#     jvar_byte = jvar.encode('utf-8')
+#     dlen = len(jvar_byte)
+#     print('dlen = %d' % dlen)
+#     packlen = int.to_bytes(dlen, 4, 'little')
+#     return packlen + jvar_byte
+#
+# a = {
+#     'type': 1,
+#     'time': 0.02
+# }
+#
+# jvar = json.dumps(a)
+# byvar = jvar.encode('utf-8')
+# print(jvar, len(jvar))
+# print(byvar, len(byvar))
+# print(pack(a))
 
-
-def pack(pyvar):
-    jvar = json.dumps(pyvar)
-    jvar_byte = jvar.encode('utf-8')
-    dlen = len(jvar_byte)
-    print('dlen = %d' % dlen)
-    packlen = int.to_bytes(dlen, 4, 'little')
-    return packlen + jvar_byte
-
-a = {
-    'type': 1,
-    'time': 0.02
-}
-
-jvar = json.dumps(a)
-byvar = jvar.encode('utf-8')
-print(jvar, len(jvar))
-print(byvar, len(byvar))
-print(pack(a))
-
+# # ***********************************************************************
 # class ClientSocket(object):
 #
 #     def __init__(self):

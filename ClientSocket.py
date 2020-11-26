@@ -58,7 +58,7 @@ class ClientSocket(object):
                 if len(rxbuf) >= 4 + dlen:
                     # 取出数据段
                     buf = rxbuf[4:4 + dlen]
-                    print('buf:', buf)
+                    # print('buf:', buf)
                     # buf => pyvar
                     pyvar = json.loads(buf.decode('utf-8'))
                     self.recv_cb(pyvar)
