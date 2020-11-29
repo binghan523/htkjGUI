@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>719</width>
-    <height>613</height>
+    <height>702</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
 }
 </string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" stretch="4,4,1">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="6,6,1">
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -29,7 +29,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="PlotWidget" name="guiplot_consensus" native="true"/>
+       <widget class="GraphicsLayoutWidget" name="guiplot_consensus" native="true"/>
       </item>
      </layout>
     </widget>
@@ -41,7 +41,7 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <widget class="PlotWidget" name="guiplot_growthRate" native="true"/>
+       <widget class="GraphicsLayoutWidget" name="guiplot_growthRate" native="true"/>
       </item>
      </layout>
     </widget>
@@ -86,9 +86,9 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>PlotWidget</class>
+   <class>GraphicsLayoutWidget</class>
    <extends>QWidget</extends>
-   <header location="global">pyqtgraph.h</header>
+   <header>pyqtgraph.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

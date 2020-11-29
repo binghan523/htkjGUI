@@ -1,5 +1,6 @@
 import time
-import os
+# import os
+from os import _exit
 import sys
 import math
 import multiprocessing
@@ -9,6 +10,7 @@ from ClientSocket import ClientSocket
 from PyQt5.QtGui import QTextCursor, QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox
 from PyQt5.QtCore import QThread, pyqtSignal, QTimer, Qt
+import pyqtgraph as pg
 import pyqtgraph.opengl as gl
 import numpy as np
 
@@ -209,9 +211,9 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
             if reply == QMessageBox.Yes:
                 self.queue_system.put('exit')
                 self.queue_node.put('exit')
-                time.sleep(0.005)  # 加个时延，不然queue反应不过来，子窗口不能保证全部关闭
+                time.sleep(0.1)  # 加个时延，不然queue反应不过来，子窗口不能保证全部关闭
                 event.accept()
-                os._exit(0)
+                _exit(0)
             else:
                 event.ignore()
         except Exception as e:
@@ -247,7 +249,7 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
                 dtype = py_data['type']
                 if dtype == self.R_SIM_STEP_CON:
                     self.is_ACK = True
-                    setTime_time = time.process_time()
+                    # setTime_time = time.process_time()
                     # self.ui_runningTime()
                     # print('setTime is: %.6f' % setTime_time)
                     self.signal_setTime.emit()
@@ -367,7 +369,7 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
                     # 发送之后置self.is_ACK为False，当收到反馈消息后置True
                     self.is_ACK = False
                     # 执行定时发送操作
-                    step_time = time.process_time()
+                    # step_time = time.process_time()
                     # print('step_time is: %.6f' % step_time)
                     self.conn.send(message)
             except Exception as e:
@@ -661,7 +663,6 @@ class ClientTCP(QMainWindow, Ui_MainWindow):
 
 
 class ChildWinNodeStatus(QDialog, Ui_NodeStatus):
-
     signal_plot = pyqtSignal(object, object, object, object)
     # 当主窗口被关闭后，也关闭子窗口
     signal_exit = pyqtSignal(object)
@@ -691,11 +692,16 @@ class ChildWinNodeStatus(QDialog, Ui_NodeStatus):
         self.guiplot.addItem(self.g)
         self.sp = gl.GLScatterPlotItem(pos=self.pos, size=self.size, color=self.color, pxMode=False)
         self.guiplot.addItem(self.sp)  # 最主要的时间花费在这
+
+        # 添加坐标轴Item
+        ax = gl.GLAxisItem()
+        ax.setSize(40, 40, 40)
+        self.guiplot.addItem(ax)
         # time_end = time.process_time()
         # print('Time spent on draw is: %.6f' % (time_end - time_start))
 
     def closeEvent(self, event):
-        os._exit(0)
+        _exit(0)
 
     def analyzeNode(self, dataNode):
         """
@@ -722,7 +728,7 @@ class ChildWinNodeStatus(QDialog, Ui_NodeStatus):
             if nodes[i]['started'] is True and nodes[i]['malicious'] is False:
                 # 节点类型，1为簇首 黄，2为成员 绿，5为CA 天蓝，10为客户 蓝
                 if nodes[i]['type'] == 1:
-                    size[i] = 1.59
+                    size[i] = 1
                     color[i] = (1.0, 1.0, 0.0, 1)  # 黄色
                 if nodes[i]['type'] == 2:
                     color[i] = (0.0, 1.0, 0.0, 1)  # 绿色
@@ -777,6 +783,34 @@ class ChildWinSystemStatus(QDialog, Ui_SystemStatus):
         # 设置窗口最小化与最大化按钮，关闭按钮置灰
         self.setWindowFlags(Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint)
 
+        # 美化，加网格和右上角数据显示
+        self.label1 = pg.LabelItem(justify='right')
+        self.guiplot_consensus.addItem(self.label1)
+        self.p1 = self.guiplot_consensus.addPlot(title="Consensus Time", row=1, col=0)
+        self.p1.setAutoVisible(y=True)
+        self.p1.showGrid(x=True, y=True)  # 设置网格
+        self.p1.setLabel('bottom', "Simulation time")
+        self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
+        self.hLine1 = pg.InfiniteLine(angle=0, movable=False)
+        self.p1.addItem(self.vLine1, ignoreBounds=True)
+        self.p1.addItem(self.hLine1, ignoreBounds=True)
+        self.vb1 = self.p1.vb
+        # 将鼠标移动事件，设置触发函数self.mouseMoved_1
+        self.proxy1 = pg.SignalProxy(self.p1.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved_1)
+
+        self.label2 = pg.LabelItem(justify='right')
+        self.guiplot_growthRate.addItem(self.label2)
+        self.p2 = self.guiplot_growthRate.addPlot(title="Growth Rate", row=1, col=0)
+        self.p2.setAutoVisible(y=True)
+        self.p2.showGrid(x=True, y=True)
+        self.p2.setLabel('bottom', "Simulation time")
+        self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
+        self.hLine2 = pg.InfiniteLine(angle=0, movable=False)
+        self.p2.addItem(self.vLine2, ignoreBounds=True)
+        self.p2.addItem(self.hLine2, ignoreBounds=True)
+        self.vb2 = self.p2.vb
+        self.proxy2 = pg.SignalProxy(self.p2.scene().sigMouseMoved, rateLimit=60, slot=self.mouseMoved_2)
+
         self.signal_plot.connect(self.child_plotSystem)
         self.signal_exit.connect(self.closeEvent)
 
@@ -786,8 +820,45 @@ class ChildWinSystemStatus(QDialog, Ui_SystemStatus):
         self.rateGrowth = []
         self.simulationTime = []
 
+    def mouseMoved_1(self, evt):
+        pos = evt[0]  # using signal proxy turns original arguments into a tuple
+        if self.p1.sceneBoundingRect().contains(pos):
+            mousePoint = self.vb1.mapSceneToView(pos)
+            # 一定要注意用float，这个bug花了一个小时才找出来。注意图中y值变化时刻的x，发现都是x超过整数时才变化，找出的本bug
+            index = float(mousePoint.x())
+            # 当未启动时，鼠标移动，只显示x的值
+            if len(self.simulationTime) == 0:
+                self.label1.setText("<span style='font-size: 12pt'>SimTime=%0.2f s,   <span style='color: white'>ConsensusTime=   s</span>" % (mousePoint.x()))
+                # self.label1.setText("<span style='font-size: 12pt;color: white'>SimTime=%0.1f s, ConTime=    </span>" % (mousePoint.x()))
+            # 调整，使label精确显示y值
+            if len(self.simulationTime) >= 2 and self.simulationTime[0] < index < self.simulationTime[-1]:
+                for i in range(len(self.simulationTime)):
+                    if self.simulationTime[i] <= index < self.simulationTime[i + 1]:
+                        self.label1.setText("<span style='font-size: 12pt'>SimTime=%0.2f s,   <span style='color: white'>Consensus Time=%0.2f s</span>" % (mousePoint.x(), self.consensusLatency[i]))
+                        break
+            self.vLine1.setPos(mousePoint.x())
+            self.hLine1.setPos(mousePoint.y())
+
+    def mouseMoved_2(self, evt):
+        pos = evt[0]  # using signal proxy turns original arguments into a tuple
+        if self.p2.sceneBoundingRect().contains(pos):
+            mousePoint = self.vb2.mapSceneToView(pos)
+            # 一定要注意用float，这个bug花了一个小时才找出来。注意图中y值变化时刻的x，发现都是x超过整数时才变化，找出的本bug
+            index = float(mousePoint.x())
+            # 当未启动时，鼠标移动，只显示x的值
+            if len(self.simulationTime) == 0:
+                self.label2.setText("<span style='font-size: 12pt'>SimTime=%0.2f s,   <span style='color: white'>GrowthRate=    </span>" % (mousePoint.x()))
+            # 调整，使label精确显示y值
+            if len(self.simulationTime) >= 2 and self.simulationTime[0] < index < self.simulationTime[-1]:
+                for i in range(len(self.simulationTime)):
+                    if self.simulationTime[i] <= index < self.simulationTime[i + 1]:
+                        self.label2.setText("<span style='font-size: 12pt'>SimTime=%0.2f s,   <span style='color: white'>GrowthRate=%0.2f</span>" % (mousePoint.x(), self.rateGrowth[i]))
+                        break
+            self.vLine2.setPos(mousePoint.x())
+            self.hLine2.setPos(mousePoint.y())
+
     def closeEvent(self, event):
-        os._exit(0)
+        _exit(0)
 
     def analyzeSystem(self, dataSystem):
         """
@@ -796,13 +867,14 @@ class ChildWinSystemStatus(QDialog, Ui_SystemStatus):
         value = dataSystem['value']
         if dataSystem['stat'] == 0:
             self.consensusLatency.append(value)
-            rate_growth = 1 / value
-            self.rateGrowth.append(rate_growth)
             self.simulationTime.append(dataSystem['time_simulated'])
+            rate_growth = 1 / value
+            self.rateGrowth.append(round(rate_growth, 4))
             # 向连接槽发射信号，触发窗口类中画图函数
             self.signal_plot.emit(self.consensusLatency, self.rateGrowth, self.simulationTime)
         if dataSystem['stat'] == 1:
-            self.rate_anti.setText(str(value))
+            value_rate = round(value * 100, 2)
+            self.rate_anti.setText(str(value_rate) + '%')
 
     def child_plotSystem(self, consensusLatency, growth_rate, list_time):
         """
@@ -813,10 +885,11 @@ class ChildWinSystemStatus(QDialog, Ui_SystemStatus):
         :return:
         """
         if consensusLatency:
-            # self.guiplot_consensus.clear()
-            self.guiplot_consensus.plot(list_time, consensusLatency)
-            # self.guiplot_growthRate.clear()
-            self.guiplot_growthRate.plot(list_time, growth_rate)
+            self.p1.plot(list_time, consensusLatency, pen=(0, 255, 0))
+            # self.p1.setXRange(0, list_time[-1], padding=0)
+            self.p2.plot(list_time, growth_rate, pen=(0, 255, 0))
+            # self.guiplot_consensus.plot(list_time, consensusLatency)
+            # self.guiplot_growthRate.plot(list_time, growth_rate)
         else:
             pass
 

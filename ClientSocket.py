@@ -1,4 +1,3 @@
-from client_config import *
 import socket
 import threading
 import json

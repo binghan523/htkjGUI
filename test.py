@@ -1,4 +1,85 @@
 # # ***********************************************************************
+# # https://www.thinbug.com/q/27571494
+from pyqtgraph.Qt import QtCore, QtGui
+import pyqtgraph.opengl as gl
+import numpy as np
+import pyqtgraph as pg
+
+class NestedDict(dict):
+    def __getitem__(self, item):
+        if item not in self:
+            self[item] = NestedDict()
+        return super().__getitem__(item)
+
+mainList = [['BM', 'Butterfly', 'E-shop', '1400'],
+            ['BM', 'Butterfly', 'Fler', '2450'],
+            ['BM', 'Butterfly', 'Holesovice', '2450'],
+            ['Climbing presents', 'Ear-rings', 'Holesovice', '136'],
+            ['Climbing presents', 'Other jewellery', 'E-shop', '160'],
+            ['Climbing presents', 'Other jewellery', 'Other', '112'],
+            ['PP', 'Skirts', 'Fler', '1380'],
+            ['PP', 'Skirts', 'Holesovice', '1320'],
+            ['PP', 'Skirts', 'Sashe', '450'],
+            ['PP', 'Bags', 'E-shop', '2500'],
+            ['PP', 'Skirts', 'E-shop', '5600'],
+            ['PP', 'Dresses', 'Other', '6551'],
+            ['Mar', 'Dresses', 'Holesovice', '1000'],
+            ['Mar', 'Skirts', 'Holesovice', '3000'],
+            ['Mar', 'Ear-rings', 'Holesovice', '2000']]
+
+app = QtGui.QApplication([])
+w = gl.GLViewWidget()
+w.opts['distance'] = 50
+w.showMaximized()
+w.setWindowTitle('pyqtgraph example: GLViewWidget')
+
+# 这起到了加坐标轴的作用
+ax = gl.GLAxisItem()
+ax.setSize(10,10,10)
+w.addItem(ax)
+
+labels = dict(zip(list(set([x[0] for x in mainList])), [2*i for i,j in enumerate(list(set([x[0] for x in mainList])))]))
+shops = dict(zip(list(set([x[2] for x in mainList])), [2*i for i,j in enumerate(list(set([x[2] for x in mainList])))]))
+items = dict(zip(list(set([x[1] for x in mainList])), [2*i for i,j in enumerate(list(set([x[1] for x in mainList])))]))
+
+d = NestedDict()
+
+for tag, item, source, qty in mainList:
+    d[tag][source][item] = qty
+
+# 添加legend，但是好像并没有起作用
+legend = pg.LegendItem()
+
+colors = {}
+for i in items.keys():
+    colors[i] = (round(5*np.random.rand()*np.random.rand(),2),
+                 round(5*np.random.rand()*np.random.rand(),2),
+                 round(5*np.random.rand()*np.random.rand(),2),
+                 round(5*np.random.rand()*np.random.rand(),2))
+
+for key, value in d.items():
+    for nkey, nvalue in value.items():
+        val = []
+        for index, nvalue_ in enumerate(nvalue.values()):
+            if index == 0:
+                val.append(0)
+            else:
+                val.append(float(list(nvalue.values())[index-1])/1000)
+            size = np.empty((1,1,3))
+            size[...,0:2] = 1
+            size[...,2] = float(list(nvalue.values())[index])/1000
+            bg = gl.GLBarGraphItem(np.array([[[labels[key], shops[nkey], sum(val)]]]), size)
+            bg.setColor(colors[list(nvalue.keys())[index]])
+            w.addItem(bg)
+#            legend.addItem(colors[list(nvalue.keys())[index]], list(nvalue.keys())[index])
+#            w.addItem(legend)
+
+if __name__ == '__main__':
+    import sys
+    if (sys.flags.interactive != 1) or not hasattr(QtCore, 'PYQT_VERSION'):
+        QtGui.QApplication.instance().exec_()
+
+# # ***********************************************************************
 # import json
 #
 #

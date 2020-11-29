@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_SystemStatus(object):
     def setupUi(self, SystemStatus):
         SystemStatus.setObjectName("SystemStatus")
-        SystemStatus.resize(719, 613)
+        SystemStatus.resize(719, 702)
         SystemStatus.setStyleSheet("*{    \n"
 "    font-family:微软雅黑;\n"
 "    font-size:15px;\n"
@@ -27,7 +27,7 @@ class Ui_SystemStatus(object):
         self.groupBox.setObjectName("groupBox")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.groupBox)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.guiplot_consensus = PlotWidget(self.groupBox)
+        self.guiplot_consensus = GraphicsLayoutWidget(self.groupBox)
         self.guiplot_consensus.setObjectName("guiplot_consensus")
         self.verticalLayout_2.addWidget(self.guiplot_consensus)
         self.verticalLayout.addWidget(self.groupBox)
@@ -35,7 +35,7 @@ class Ui_SystemStatus(object):
         self.groupBox_3.setObjectName("groupBox_3")
         self.verticalLayout_3 = QtWidgets.QVBoxLayout(self.groupBox_3)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
-        self.guiplot_growthRate = PlotWidget(self.groupBox_3)
+        self.guiplot_growthRate = GraphicsLayoutWidget(self.groupBox_3)
         self.guiplot_growthRate.setObjectName("guiplot_growthRate")
         self.verticalLayout_3.addWidget(self.guiplot_growthRate)
         self.verticalLayout.addWidget(self.groupBox_3)
@@ -56,8 +56,8 @@ class Ui_SystemStatus(object):
         self.horizontalLayout.setStretch(1, 1)
         self.horizontalLayout.setStretch(2, 6)
         self.verticalLayout.addWidget(self.groupBox_2)
-        self.verticalLayout.setStretch(0, 4)
-        self.verticalLayout.setStretch(1, 4)
+        self.verticalLayout.setStretch(0, 6)
+        self.verticalLayout.setStretch(1, 6)
         self.verticalLayout.setStretch(2, 1)
 
         self.retranslateUi(SystemStatus)
@@ -70,4 +70,4 @@ class Ui_SystemStatus(object):
         self.groupBox_3.setTitle(_translate("SystemStatus", "生长速率"))
         self.groupBox_2.setTitle(_translate("SystemStatus", "统计"))
         self.label1.setText(_translate("SystemStatus", "防篡改率："))
-from pyqtgraph import PlotWidget
+from pyqtgraph import GraphicsLayoutWidget
